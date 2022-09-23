@@ -22,11 +22,11 @@ public interface RepoCategory extends JpaRepository<Category, Integer> {
     Category findByCategoryId(@Param("category_id") Integer category_id);
 
     //Para listar las categorías.
-    @Query(value = "SELECT * FROM category WHERE region = :region", nativeQuery = true)
+    @Query(value = "SELECT * FROM category WHERE category = :category", nativeQuery = true)
     List<Category> findByCategory(@Param("category") String category);
 
     //Para agregar categorías.
-    @Query(value = "INSERT INTO category (category,status) VALUES(:region,1)", nativeQuery = true)
+    @Query(value = "INSERT INTO category (category,status) VALUES(:category,1)", nativeQuery = true)
     Category createCategory(@Param("category") String category);
 
     //Para actualizar categorías.
