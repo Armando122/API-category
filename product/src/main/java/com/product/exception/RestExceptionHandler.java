@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 /**
  * Clase que intercepta excepciones de api exception.
  * Que intercepta las respuestas de ApiException.
+ * Nombre de clase es: RestExceptionHandler, se usó en vez de Exception Handler
+ * para evitar errores con la clase del mismo nombre.
  * */
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
