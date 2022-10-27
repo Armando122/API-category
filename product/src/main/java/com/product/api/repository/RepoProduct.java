@@ -2,6 +2,7 @@ package com.product.api.repository;
 
 import javax.transaction.Transactional;
 
+import com.product.api.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +12,39 @@ import org.springframework.stereotype.Repository;
 import com.product.api.entity.Product;
 
 @Repository
-public interface RepoProduct extends JpaRepository<Product, Integer>{
-	
+public interface RepoProduct extends JpaRepository<Product, Integer> {
+
 	// 3. Implementar la firma de un método que permita consultar un producto por su código GTIN y con estatus 1
+	@Query(value = "SELECT * FROM product WHERE status = 1 AND gtin = :gtin", nativeQuery = true)
+	Product findByStatusAndGtin(@Param("gtin") String gtin);
+
+	@Query(value = "SELECT * FROM product WHERE gtin = :gtin", nativeQuery = true)
+	Product findByGtin(@Param("gtin") String gtin);
+
+	//Para buscar un producto por nombre.
+	@Query(value = "SELECT * FROM product WHERE product = :product", nativeQuery = true)
+	Product findByProduct(@Param("product") String product);
+
+	//Para actualizar status.
+	@Modifying
+	@Transactional
+	@Query(value = "UPDATE product SET status = 1 WHERE product_id = :product_id", nativeQuery = true)
+	Integer activateProduct(@Param("product_id") Integer product_id);
+
+	//Para agregar productos.
+	@Modifying
+	@Transactional
+	@Query(value = "INSERT INTO product "
+	                 + "(gtin,product,description,price,stock,category_id,status) "
+			         + "VALUES (:gtin,:product,:description,:price,:stock,:category_id,1)", nativeQuery = true)
+	void createProduct(
+			@Param("gtin") String gtin,
+			@Param("product") String product,
+			@Param("description") String description,
+			@Param("price") Double price,
+			@Param("stock") Integer stock,
+			@Param("category_id") Integer category_id
+	);
 	
 	@Modifying
 	@Transactional

@@ -1,5 +1,6 @@
 package com.product.api.service;
 
+import com.product.api.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,8 @@ import com.product.api.entity.Product;
 import com.product.api.repository.RepoCategory;
 import com.product.api.repository.RepoProduct;
 import com.product.exception.ApiException;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Service
 public class SvcProductImp implements SvcProduct {
@@ -22,9 +25,9 @@ public class SvcProductImp implements SvcProduct {
 
 	@Override
 	public Product getProduct(String gtin) {
-		Product product = null; // sustituir null por la llamada al método implementado en el repositorio
+		Product product = repo.findByStatusAndGtin(gtin);
 		if (product != null) {
-			product.setCategory(repoCategory.getCategory(product.getCategory_id()));
+			product.setCategory(repoCategory.findByCategoryId(product.getCategory_id()));
 			return product;
 		}else
 			throw new ApiException(HttpStatus.NOT_FOUND, "product does not exist");
@@ -39,7 +42,34 @@ public class SvcProductImp implements SvcProduct {
 	 */
 	@Override
 	public ApiResponse createProduct(Product in) {
-		return null;
+		Product product = (Product) repo.findByGtin(in.getGtin());
+		Category categoryS = (Category) repoCategory.findByCategoryId(in.getCategory_id());
+
+		//Se revisa que la categoría exista
+		if (categoryS == null)
+			throw new ApiException(HttpStatus.NOT_FOUND, "Category not found");
+
+		//Se revisa que el gtin del producto está en la base de datos
+		if (product != null) {
+			//Se verifica el status del producto, si es 0 se activa, en otro caso se lanza una excepción.
+			if (product.getStatus() == 0) {
+				repo.activateProduct(product.getProduct_id());
+				return new ApiResponse("product activated");
+			} else {
+				throw new ApiException(HttpStatus.BAD_REQUEST, "Product gtin already exists");
+			}
+		}
+
+		//Se busca el producto pro nombre en caso de que no se encuentre por gtin.
+		product = (Product) repo.findByProduct(in.getProduct());
+		//Se revisa que el nombre no exista
+		if (product != null){
+			throw new ApiException(HttpStatus.BAD_REQUEST, "product name already exists");
+		}
+
+		//En otro caso no se encontró el producto, entonces se crea.
+		repo.createProduct(in.getGtin(),in.getProduct(),in.getDescription(),in.getPrice(),in.getStock(),in.getCategory_id());
+		return new ApiResponse("product created");
 	}
 
 	@Override
