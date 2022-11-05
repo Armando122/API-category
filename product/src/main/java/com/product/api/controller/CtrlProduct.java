@@ -2,6 +2,8 @@ package com.product.api.controller;
 
 import javax.validation.Valid;
 
+import com.product.api.dto.ProductResponse;
+import com.product.api.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +23,15 @@ public class CtrlProduct {
 
 	@Autowired
 	SvcProduct svc;
-	
-	// 1. Implementar método getProduct
+
 	@GetMapping("/{gtin}")
 	public ResponseEntity<Product> getProduct(@PathVariable String gtin){
 		return new ResponseEntity<>(svc.getProduct(gtin),HttpStatus.OK);
+	}
+
+	@GetMapping("/category/{category_id}")
+	public ResponseEntity<List<ProductResponse>> listProducts(@PathVariable("category_id") Integer category_id){
+		return new ResponseEntity<>(svc.getProducts(category_id), HttpStatus.OK);
 	}
 
 	@PostMapping

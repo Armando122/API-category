@@ -1,5 +1,6 @@
 package com.product.api.repository;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.transaction.Transactional;
 
 import com.product.api.entity.Category;
@@ -11,12 +12,19 @@ import org.springframework.stereotype.Repository;
 
 import com.product.api.entity.Product;
 
+import java.util.List;
+
 @Repository
 public interface RepoProduct extends JpaRepository<Product, Integer> {
 
 	// 3. Implementar la firma de un método que permita consultar un producto por su código GTIN y con estatus 1
 	@Query(value = "SELECT * FROM product WHERE status = 1 AND gtin = :gtin", nativeQuery = true)
 	Product findByStatusAndGtin(@Param("gtin") String gtin);
+
+	@Query(value = "SELECT p.* FROM product p INNER JOIN " +
+			       "category c ON p.category_id=c.category_id WHERE p.category_id = :category_id " +
+			       "AND p.status = 1", nativeQuery = true)
+	List<Product> findByProdCat(@Param("category_id") int category_id);
 
 	@Query(value = "SELECT * FROM product WHERE gtin = :gtin", nativeQuery = true)
 	Product findByGtin(@Param("gtin") String gtin);
