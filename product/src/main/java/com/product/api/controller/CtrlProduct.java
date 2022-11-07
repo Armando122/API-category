@@ -1,7 +1,9 @@
 package com.product.api.controller;
 
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.validation.Valid;
 
+import com.product.api.dto.CategoryDTO;
 import com.product.api.dto.ProductResponse;
 import com.product.api.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,12 @@ public class CtrlProduct {
 	@PutMapping("/{gtin}/stock/{stock}")
 	public ResponseEntity<ApiResponse> updateProductStock(@PathVariable("gtin") String gtin, @PathVariable("stock") Integer stock) {
 		return new ResponseEntity<>(svc.updateProductStock(gtin,stock), HttpStatus.OK);
+	}
+
+	//Método Update Product Category
+	@PutMapping("/{gtin}/category")
+	public ResponseEntity<ApiResponse> updateProductCategory(@PathVariable("gtin") String gtin, @Valid @RequestBody CategoryDTO dto,BindingResult bindingResult) {
+		return new ResponseEntity<>(svc.updateProdCategory(gtin, dto), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")

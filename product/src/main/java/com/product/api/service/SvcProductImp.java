@@ -1,5 +1,6 @@
 package com.product.api.service;
 
+import com.product.api.dto.CategoryDTO;
 import com.product.api.dto.ProductResponse;
 import com.product.api.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,5 +115,21 @@ public class SvcProductImp implements SvcProduct {
 		
 		repo.updateProductStock(gtin, product.getStock() - stock);
 		return new ApiResponse("product stock updated");
+	}
+
+	@Override
+	public ApiResponse updateProdCategory(String gtin, CategoryDTO catId){
+		//Se revisa si existe la categoría
+		Category cat = (Category) repoCategory.findByCategoryId(catId.getId());
+		//Se revisa si existe el producto.
+		Product prod = (Product) repo.findByGtin(gtin);
+		if (prod == null){
+			throw new ApiException(HttpStatus.BAD_REQUEST,"category not found");
+		}
+		if (prod.getStatus() == 0)
+			throw new ApiException(HttpStatus.NOT_FOUND, "product does not exists");
+
+		repo.updateProdCat(gtin, catId.getId());
+		return new ApiResponse("product category updated");
 	}
 }
