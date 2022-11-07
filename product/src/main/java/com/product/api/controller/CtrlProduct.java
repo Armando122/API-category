@@ -1,7 +1,11 @@
 package com.product.api.controller;
 
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.validation.Valid;
 
+import com.product.api.dto.CategoryDTO;
+import com.product.api.dto.ProductResponse;
+import com.product.api.entity.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +25,15 @@ public class CtrlProduct {
 
 	@Autowired
 	SvcProduct svc;
-	
-	// 1. Implementar método getProduct
+
 	@GetMapping("/{gtin}")
 	public ResponseEntity<Product> getProduct(@PathVariable String gtin){
 		return new ResponseEntity<>(svc.getProduct(gtin),HttpStatus.OK);
+	}
+
+	@GetMapping("/category/{category_id}")
+	public ResponseEntity<List<ProductResponse>> listProducts(@PathVariable("category_id") Integer category_id){
+		return new ResponseEntity<>(svc.getProducts(category_id), HttpStatus.OK);
 	}
 
 	@PostMapping
@@ -46,6 +54,12 @@ public class CtrlProduct {
 	@PutMapping("/{gtin}/stock/{stock}")
 	public ResponseEntity<ApiResponse> updateProductStock(@PathVariable("gtin") String gtin, @PathVariable("stock") Integer stock) {
 		return new ResponseEntity<>(svc.updateProductStock(gtin,stock), HttpStatus.OK);
+	}
+
+	//Método Update Product Category
+	@PutMapping("/{gtin}/category")
+	public ResponseEntity<ApiResponse> updateProductCategory(@PathVariable("gtin") String gtin, @Valid @RequestBody CategoryDTO dto,BindingResult bindingResult) {
+		return new ResponseEntity<>(svc.updateProdCategory(gtin, dto), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
