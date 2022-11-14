@@ -1,5 +1,6 @@
 package com.product.api.service;
 
+import com.product.api.dto.ApiResponse;
 import com.product.api.entity.Category;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +18,11 @@ public interface SvcCategory {
     Category getCategory(Integer category_id);
 
     //Creación de categoría
-    String createCategory(Category category);
+    ApiResponse createCategory(Category category);
 
     //Actualización de categoría
-    String updateCategory(Integer category_id, Category category);
+    ApiResponse updateCategory(Integer category_id, Category category);
 
     //Eliminar categoría
-    String deleteCategory(Integer category_id);
+    ApiResponse deleteCategory(Integer category_id);
 }
